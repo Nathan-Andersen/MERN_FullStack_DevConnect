@@ -13,3 +13,12 @@ Create Profile Model
 Add get user profile route
 Add create/update user profile route
 Add route to get profile by ID or all profiles
+
+## Commit 9
+
+Add route to delete user and Profile
+
+## Commit 10
+
+Add route for profile create experience
+Add route for profile delete experience
