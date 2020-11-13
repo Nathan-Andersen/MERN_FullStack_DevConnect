@@ -27,3 +27,11 @@ Add route for profile delete experience
 
 Add route for profile create education
 Add route for profile delete education
+
+## Commit 12
+
+Add github repositories
+Add default.json to gitignore
+Remove default.json from git tracking
+Installed Axios
+Added githubToken to default.json

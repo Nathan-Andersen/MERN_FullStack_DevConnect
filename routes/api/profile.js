@@ -2,6 +2,8 @@ import express from "express";
 let router = express.Router();
 import pkg from "express-validator";
 const { check, validationResult } = pkg;
+import axios from "axios";
+import config from "config";
 
 import auth from "../../middleware/auth.js";
 import Profile from "../../models/Profile.js";
@@ -34,10 +36,7 @@ router.post(
   // middleware auth and validator
   [
     auth,
-    [
-      check("status", "Status is required").not().isEmpty(),
-      check("skills", "Skills is required").not().isEmpty(),
-    ],
+    [check("status", "Status is required").not().isEmpty(), check("skills", "Skills is required").not().isEmpty()],
   ],
   async (req, res) => {
     //check for validation errors
@@ -87,11 +86,7 @@ router.post(
       let profile = await Profile.findOne({ user: req.user.id });
       if (profile) {
         //Update
-        profile = await Profile.findOneAndUpdate(
-          { user: req.user.id },
-          { $set: profileFields },
-          { new: true }
-        );
+        profile = await Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true });
 
         return res.json(profile);
       }
@@ -180,15 +175,7 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
     //Destructure the response
-    const {
-      title,
-      company,
-      location,
-      from,
-      to,
-      current,
-      description,
-    } = req.body;
+    const { title, company, location, from, to, current, description } = req.body;
 
     const newExp = {
       title,
@@ -223,9 +210,7 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
       user: req.user.id,
     });
     //Get remove index
-    const removeIndex = profile.experience
-      .map((item) => item.id)
-      .indexOf(req.params.exp_id);
+    const removeIndex = profile.experience.map((item) => item.id).indexOf(req.params.exp_id);
     profile.experience.splice(removeIndex, 1);
     await profile.save();
     res.json(profile);
@@ -253,15 +238,7 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
     //Destructure the response
-    const {
-      school,
-      degree,
-      fieldofstudy,
-      from,
-      to,
-      current,
-      description,
-    } = req.body;
+    const { school, degree, fieldofstudy, from, to, current, description } = req.body;
 
     const newEdu = {
       school,
@@ -296,12 +273,28 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
       user: req.user.id,
     });
     //Get remove index
-    const removeIndex = profile.education
-      .map((item) => item.id)
-      .indexOf(req.params.edu_id);
+    const removeIndex = profile.education.map((item) => item.id).indexOf(req.params.edu_id);
     profile.education.splice(removeIndex, 1);
     await profile.save();
     res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+// @route Get api/profile/github/:username
+// @desc  Get user repos from Github
+// @access Public
+router.get("/github/:username", async (req, res) => {
+  try {
+    const uri = encodeURI(`https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc`);
+    const headers = {
+      "user-agent": "node.js",
+      Authorization: `token ${config.get("githubToken")}`,
+    };
+    const githubResponse = await axios.get(uri, { headers });
+    return res.json(githubResponse.data);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
