@@ -6,6 +6,9 @@ const app = express();
 connectDB();
 app.get("/", (req, res) => res.send("API Running"));
 
+//Middleware
+app.use(express.json({ extended: false }));
+
 //Define Routes
 import usersRouter from "./routes/api/users.js";
 app.use("/api/users", usersRouter);
