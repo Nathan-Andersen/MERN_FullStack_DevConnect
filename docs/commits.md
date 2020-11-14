@@ -35,3 +35,13 @@ Add default.json to gitignore
 Remove default.json from git tracking
 Installed Axios
 Added githubToken to default.json
+
+## Commit 13
+
+Created Post Schema and Routes
+
+Created Post Schema
+Created Add Post route
+Created Get & Delete Post route
+Created Like & Unlike route
+Created Add & Remove Comment Route
