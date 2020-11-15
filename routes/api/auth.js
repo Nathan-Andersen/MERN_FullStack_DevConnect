@@ -9,8 +9,8 @@ import bcrypt from "bcryptjs";
 import auth from "../../middleware/auth.js";
 import User from "../../models/User.js";
 
-// @route Get api/Auth
-// @desc  Test route
+// @route Get api/auth
+// @desc  Get user by Token
 // @access Public
 router.get("/", auth, async (req, res) => {
   try {
@@ -27,33 +27,28 @@ router.get("/", auth, async (req, res) => {
 // @access  Public
 router.post(
   "/",
-  [
-    check("email", "Please include a valid email").isEmail(),
-    check("password", "Password is required").exists(),
-  ],
+  check("email", "Please include a valid email").isEmail(),
+  check("password", "Password is required").exists(),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
+    //Destructure request body
     const { email, password } = req.body;
 
     try {
       //Check if user exists
       let user = await User.findOne({ email });
       if (!user) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: "Invalid Credentials" }] });
+        return res.status(400).json({ errors: [{ msg: "Invalid Credentials" }] });
       }
 
       //Verify User & Password
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: "Invalid Credentials" }] });
+        return res.status(400).json({ errors: [{ msg: "Invalid Credentials" }] });
       }
 
       //Return jsonwebtoken
@@ -63,18 +58,10 @@ router.post(
         },
       };
 
-      jwt.sign(
-        payload,
-        config.get("jwtSecret"),
-        { expiresIn: 360000 },
-        (err, token) => {
-          if (err) throw err;
-          res.json({ token });
-        }
-      );
-
-      // console.log("req.body", req.body);
-      // res.send("User registered");
+      jwt.sign(payload, config.get("jwtSecret"), { expiresIn: 360000 }, (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      });
     } catch (err) {
       console.log("err.message", err.message);
       res.status(500).send("Server Error");

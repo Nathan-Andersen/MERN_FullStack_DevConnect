@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const PostSchema = new mongoose.Schema({
   user: {
     type: Schema.Types.ObjectID,
-    ref: "users",
   },
   text: {
     type: String,
@@ -20,7 +19,6 @@ const PostSchema = new mongoose.Schema({
     {
       user: {
         type: Schema.Types.ObjectID,
-        ref: "users",
       },
     },
   ],
@@ -28,7 +26,6 @@ const PostSchema = new mongoose.Schema({
     {
       user: {
         type: Schema.Types.ObjectID,
-        ref: "users",
       },
       text: {
         type: String,
