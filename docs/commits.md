@@ -66,3 +66,7 @@ M routes/api/posts.js
 M routes/api/profile.js
 M routes/api/users.js
 M server.js
+
+## Commit 16
+
+Client side install & initial setup
